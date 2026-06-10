@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Play, Pause, RotateCcw, SkipBack, SkipForward, Share2, X, ChevronRight } from "lucide-react";
 
 const WAVEFORM_HEIGHTS = [
@@ -105,14 +105,18 @@ export function SongPlayer({
       }
     };
 
-    if (!(window as any).YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
-      (window as any).onYouTubeIframeAPIReady = () => initPlayer(videoId);
-    } else {
+    if ((window as any).YT?.Player) {
       initPlayer(videoId);
+    } else {
+      // Only inject script once across all mounts
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
+      (window as any).onYouTubeIframeAPIReady = () => initPlayer(videoId);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update track when videoId changes
@@ -170,6 +174,10 @@ export function SongPlayer({
         __html: `
         @keyframes vinyl-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .vinyl-record-spin { animation: vinyl-spin 15s linear infinite; }
+        @keyframes waveform-bar {
+          0%, 100% { transform: scaleY(1); }
+          50% { transform: scaleY(var(--wave-scale, 1.5)); }
+        }
       ` }} />
 
       <div style={{ display: "none" }}><div id="yt-player-iframe" /></div>
@@ -270,18 +278,23 @@ export function SongPlayer({
                 {WAVEFORM_HEIGHTS.map((baseHeight, i) => {
                   const progressPercent = (currentTime / duration) * 100;
                   const isActive = (i / WAVEFORM_HEIGHTS.length) * 100 <= progressPercent;
-                  const minMultiplier = 0.45 + (i % 3) * 0.12;
-                  const maxMultiplier = 1.1 + (i % 4) * 0.08;
-                  const animDuration = 0.9 + (i % 5) * 0.12;
+                  const waveScale = 0.45 + (i % 3) * 0.12;
+                  const animDuration = `${0.9 + (i % 5) * 0.12}s`;
 
                   return (
-                    <motion.div
-                      key={i} className="w-[3px] rounded-full shrink-0" initial={{ height: baseHeight }}
-                      animate={isPlaying ? {
-                        height: [baseHeight, baseHeight * minMultiplier, baseHeight * maxMultiplier, baseHeight],
-                      } : { height: baseHeight }}
-                      transition={isPlaying ? { duration: animDuration, repeat: Infinity, ease: "easeInOut", delay: i * 0.015 } : { duration: 0.2 }}
-                      style={{ backgroundColor: isActive ? "#18181b" : "#e4e4e7" }}
+                    <div
+                      key={i}
+                      className="w-[3px] rounded-full shrink-0"
+                      style={{
+                        height: baseHeight,
+                        backgroundColor: isActive ? "#18181b" : "#e4e4e7",
+                        transformOrigin: "bottom",
+                        animation: isPlaying
+                          ? `waveform-bar ${animDuration} ease-in-out ${i * 0.015}s infinite alternate`
+                          : "none",
+                        ["--wave-scale" as string]: 1 + waveScale,
+                        transition: "background-color 0.2s",
+                      }}
                     />
                   );
                 })}

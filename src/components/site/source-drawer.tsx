@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Check, ChevronLeft, Copy, Download, PanelLeft, X } from "lucide-react";
 import { highlightCode } from "@/lib/code-highlight";
 import type { RegistryItem } from "@/registry/registry";
@@ -28,11 +28,11 @@ export function SourceDrawer({
       <motion.button
         type="button"
         aria-label="Close source drawer"
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.25, ease: [0.9, .75, 0.36, 1] }}
         onClick={onClose}
       />
       <motion.aside
@@ -40,13 +40,13 @@ export function SourceDrawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby="source-drawer-title"
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", stiffness: 320, damping: 32 }}
-        className="fixed right-0 top-0 z-50 flex h-dvh w-full max-w-2xl flex-col border-l border-white/10 bg-zinc-900 text-white shadow-2xl shadow-black/40"
+        initial={{ x: "105%", opacity: 0.95 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: "105%", opacity: 0.95 }}
+        transition={{ type: "spring", stiffness: 260, damping: 28 }}
+        className="fixed right-[8px] top-[10px] z-50 flex h-[calc(100dvh-20px)] w-[calc(100vw-16px)] md:max-w-2xl flex-col rounded-[22px] border border-white/10 bg-[#0c0f13]/96 backdrop-blur-md text-white shadow-[0_24px_70px_rgba(0,0,0,0.6)] overflow-hidden"
       >
-        <div className="flex items-center justify-between border-b border-white/10 bg-white/2 px-5 py-2">
+        <div className="flex items-center justify-between border-b border-white/10 bg-white/2 px-4 py-2">
           <button
             type="button"
             onClick={onClose}
@@ -101,21 +101,21 @@ export function SourceDrawer({
         </div>
 
         <div className="flex flex-wrap gap-2 border-b border-white/10 px-5 py-3">
-          <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-[#7ee787]">
+          <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-purple-400">
             <PanelLeft size={14} />
             {item.category} · {item.name}
           </p>
           {item.dependencies.map((dependency) => (
             <span
               key={dependency}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-xs text-[#a5d6ff]"
+              className="rounded-full border border-white/10 bg-white/10 px-3 py-1 font-mono text-xs text-[#a5d6ff]"
             >
               {dependency}
             </span>
           ))}
         </div>
 
-        <pre className="min-h-0 flex-1 overflow-auto bg-[#0d1117] p-5 font-mono text-[13px] leading-6">
+        <pre className="min-h-0 flex-1 overflow-auto bg-black/35 p-5 font-mono text-[13px] leading-6 rounded-b-[22px] border-t border-white/5 scrollbar-thin scrollbar-thumb-white/5 scrollbar-track-transparent">
           <code>{highlightCode(item.code || "")}</code>
         </pre>
       </motion.aside>

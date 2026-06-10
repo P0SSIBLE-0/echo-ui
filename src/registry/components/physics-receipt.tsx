@@ -1,7 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
-import * as THREE from "three";
+import {
+  Vector3,
+  Scene,
+  PerspectiveCamera,
+  WebGLRenderer,
+  PlaneGeometry,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  Mesh,
+  CanvasTexture,
+  AmbientLight,
+  DirectionalLight,
+  PointLight,
+  BoxGeometry,
+  Raycaster,
+  Vector2,
+  DoubleSide,
+  LinearFilter,
+  LinearMipmapLinearFilter,
+} from "three";
 
 // --- Physics Constants ---
 const RESOLUTION_X = 16;
@@ -14,15 +33,15 @@ const DRAG = 1;
 const BEND_STIFFNESS = 0.4;
 
 class Particle {
-  pos: THREE.Vector3;
-  oldPos: THREE.Vector3;
-  vel = new THREE.Vector3();
-  acc = new THREE.Vector3(0, -GRAVITY, 0);
+  pos: Vector3;
+  oldPos: Vector3;
+  vel = new Vector3();
+  acc = new Vector3(0, -GRAVITY, 0);
   pinned = false;
 
   constructor(x: number, y: number, z: number) {
-    this.pos = new THREE.Vector3(x, y, z);
-    this.oldPos = new THREE.Vector3(x, y, z);
+    this.pos = new Vector3(x, y, z);
+    this.oldPos = new Vector3(x, y, z);
   }
 
   update() {
@@ -32,6 +51,9 @@ class Particle {
     this.pos.add(this.vel).add(this.acc);
   }
 }
+
+// Pre-allocate scratch vector to avoid ~960K allocs/sec GC pressure in the physics loop
+const _diff = new Vector3();
 
 class Constraint {
   p1: Particle;
@@ -47,13 +69,13 @@ class Constraint {
   }
 
   solve() {
-    const diff = new THREE.Vector3().subVectors(this.p1.pos, this.p2.pos);
-    const currentDist = diff.length();
+    _diff.subVectors(this.p1.pos, this.p2.pos);
+    const currentDist = _diff.length();
     if (currentDist === 0) return;
     const error = (currentDist - this.dist) / currentDist;
-    const correction = diff.multiplyScalar(error * 0.5 * this.stiffness);
-    if (!this.p1.pinned) this.p1.pos.sub(correction);
-    if (!this.p2.pinned) this.p2.pos.add(correction);
+    _diff.multiplyScalar(error * 0.5 * this.stiffness);
+    if (!this.p1.pinned) this.p1.pos.sub(_diff);
+    if (!this.p2.pinned) this.p2.pos.add(_diff);
   }
 }
 
@@ -148,11 +170,17 @@ function drawReceipt(
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, 400, 800);
 
-  // Subtle thermal paper speckle noise
-  for (let i = 0; i < 400; i++) {
-    ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.035})`;
-    ctx.fillRect(Math.random() * 400, Math.random() * 800, 1.5, 1.5);
+  // Subtle thermal paper speckle noise via ImageData (avoids 400 fillStyle changes)
+  const noiseData = ctx.getImageData(0, 0, 400 * canvasScale, 800 * canvasScale);
+  const nd = noiseData.data;
+  for (let i = 0; i < 800; i++) {
+    const px = Math.floor(Math.random() * 400 * canvasScale);
+    const py = Math.floor(Math.random() * 800 * canvasScale);
+    const idx = (py * 400 * canvasScale + px) * 4;
+    const alpha = Math.floor(Math.random() * 9); // ~0.035 * 255
+    nd[idx + 3] = Math.max(nd[idx + 3] - alpha, 0);
   }
+  ctx.putImageData(noiseData, 0, 0);
 
   const FONT = '"Geist Mono", monospace';
   const SEP = "rgba(0,0,0,0.29)";
@@ -292,7 +320,7 @@ export function PhysicsReceipt({
   const initializedRef = useRef(false);
 
   const cvsRef = useRef<HTMLCanvasElement | null>(null);
-  const textureRef = useRef<THREE.CanvasTexture | null>(null);
+  const textureRef = useRef<CanvasTexture | null>(null);
 
   const [defaultDate] = useState(getFormattedDate);
   const finalDate = date || defaultDate;
@@ -329,24 +357,28 @@ export function PhysicsReceipt({
     const container = containerRef.current;
     if (!container || initializedRef.current) return;
 
-    // Load Geist Mono font dynamically
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap";
-    document.head.appendChild(link);
+    // Load Geist Mono font dynamically (deduplicated)
+    let link: HTMLLinkElement | null = document.querySelector('link[href*="Geist+Mono"]');
+    const isNewLink = !link;
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap";
+      document.head.appendChild(link);
+    }
 
     initializedRef.current = true;
 
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(40, width / height, 0.1, 1000);
     camera.position.set(0, -4, 28);
 
-    let renderer: THREE.WebGLRenderer;
+    let renderer: WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({
+      renderer = new WebGLRenderer({
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
@@ -357,7 +389,7 @@ export function PhysicsReceipt({
     } catch (error) {
       container.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;font-family:monospace;font-size:14px;text-align:center;padding:20px;">WebGL not supported.<br/>Please use a modern browser.</div>';
-      link.remove();
+      if (isNewLink && link) link.remove();
       initializedRef.current = false;
       return;
     }
@@ -378,28 +410,28 @@ export function PhysicsReceipt({
     container.appendChild(renderer.domElement);
 
     // --- Lighting ---
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    scene.add(new AmbientLight(0xffffff, 0.7));
 
-    const keyLight = new THREE.DirectionalLight(0xfff9f0, 1.4);
+    const keyLight = new DirectionalLight(0xfff9f0, 1.4);
     keyLight.position.set(-2, 7, 14);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xeef4ff, 0.5);
+    const fillLight = new DirectionalLight(0xeef4ff, 0.5);
     fillLight.position.set(6, -3, 10);
     scene.add(fillLight);
 
-    const edgeLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    const edgeLight = new DirectionalLight(0xffffff, 0.7);
     edgeLight.position.set(1, 0, 2.5);
     scene.add(edgeLight);
 
-    const rimLight = new THREE.PointLight(0xfff0c0, 1.2, 55);
+    const rimLight = new PointLight(0xfff0c0, 1.2, 55);
     rimLight.position.set(0, -14, -6);
     scene.add(rimLight);
 
     // --- Printer Slot ---
-    const slotGeo = new THREE.BoxGeometry(PAPER_WIDTH + 1, 0.8, 1.5);
-    const slotMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.85, roughness: 0.12 });
-    const slot = new THREE.Mesh(slotGeo, slotMat);
+    const slotGeo = new BoxGeometry(PAPER_WIDTH + 1, 0.8, 1.5);
+    const slotMat = new MeshStandardMaterial({ color: 0x111111, metalness: 0.85, roughness: 0.12 });
+    const slot = new Mesh(slotGeo, slotMat);
     slot.position.set(0, PAPER_HEIGHT / 2, 0.2);
     scene.add(slot);
 
@@ -420,28 +452,28 @@ export function PhysicsReceipt({
       footerText,
     });
 
-    const texture = new THREE.CanvasTexture(cvs);
+    const texture = new CanvasTexture(cvs);
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    texture.minFilter = THREE.LinearMipmapLinearFilter;
-    texture.magFilter = THREE.LinearFilter;
+    texture.minFilter = LinearMipmapLinearFilter;
+    texture.magFilter = LinearFilter;
     texture.needsUpdate = true;
     textureRef.current = texture;
 
     // --- Physics Initialization ---
     const particles: Particle[] = [];
     const constraints: Constraint[] = [];
-    const geometry = new THREE.PlaneGeometry(PAPER_WIDTH, PAPER_HEIGHT, RESOLUTION_X, RESOLUTION_Y);
+    const geometry = new PlaneGeometry(PAPER_WIDTH, PAPER_HEIGHT, RESOLUTION_X, RESOLUTION_Y);
 
-    const material = new THREE.MeshPhysicalMaterial({
+    const material = new MeshPhysicalMaterial({
       map: texture,
-      side: THREE.DoubleSide,
+      side: DoubleSide,
       roughness: 0.85,
       metalness: 0.05,
       clearcoat: 0.05,
       reflectivity: 0.01,
     });
 
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new Mesh(geometry, material);
     scene.add(mesh);
 
     // Create particles
@@ -478,11 +510,11 @@ export function PhysicsReceipt({
     }
 
     // --- Drag and Throw Handling ---
-    const mouse = new THREE.Vector2();
-    const raycaster = new THREE.Raycaster();
-    const tempVec = new THREE.Vector3();
-    const tempDir = new THREE.Vector3();
-    const tempPos = new THREE.Vector3();
+    const mouse = new Vector2();
+    const raycaster = new Raycaster();
+    const tempVec = new Vector3();
+    const tempDir = new Vector3();
+    const tempPos = new Vector3();
 
     const updateMousePosition = (e: MouseEvent | TouchEvent) => {
       const rect = container.getBoundingClientRect();
@@ -608,7 +640,7 @@ export function PhysicsReceipt({
       slotMat.dispose();
       renderer.domElement.removeEventListener("webglcontextlost", handleContextLost);
       renderer.domElement.removeEventListener("webglcontextrestored", handleContextRestored);
-      link.remove();
+      if (isNewLink && link) link.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useId } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 
 interface Project {
   id: number;

@@ -1,5 +1,5 @@
 import React from "react";
-import * as FramerMotion from "framer-motion";
+import * as FramerMotion from "motion/react";
 import * as Motion from "motion";
 import * as LucideReact from "lucide-react";
 import * as Three from "three";
@@ -13,7 +13,7 @@ export function evaluateCode(compiledCode: string): React.ComponentType {
     if (canonicalName === "react") {
       return { ...React, default: React, React };
     }
-    if (canonicalName === "framer-motion") {
+    if (canonicalName === "framer-motion" || canonicalName === "motion/react") {
       return { ...FramerMotion, default: FramerMotion };
     }
     if (canonicalName === "motion") {
@@ -25,7 +25,7 @@ export function evaluateCode(compiledCode: string): React.ComponentType {
     if (canonicalName === "three") {
       return { ...Three, default: Three };
     }
-    throw new Error(`Module "${name}" is not installed in this playground. Use react, framer-motion, or lucide-react.`);
+    throw new Error(`Module "${name}" is not installed in this playground. Use react, framer-motion, motion/react, or lucide-react.`);
   };
 
   // Evaluate the transformed code in the sandbox context

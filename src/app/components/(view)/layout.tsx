@@ -17,9 +17,10 @@ export default function ViewLayout({ children }: ViewLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("sidebar-collapsed");
-    if (saved !== null) {
-      setIsCollapsed(saved === "true");
+    const stored = localStorage.getItem("sidebar-collapsed");
+    if (stored !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsCollapsed(stored === "true");
     }
   }, []);
 
@@ -29,13 +30,13 @@ export default function ViewLayout({ children }: ViewLayoutProps) {
   };
 
   return (
-    <main className="h-dvh overflow-hidden bg-background p-[7px] text-foreground">
-      <div className="relative flex h-full overflow-hidden rounded-[30px] border border-border-soft bg-surface-muted shadow-[0_30px_120px_rgba(0,0,0,0.18)] dark:shadow-[0_30px_120px_rgba(0,0,0,0.35)]">
-        
+    <main className="h-dvh overflow-hidden bg-background p-[5px] text-foreground">
+      <div className="relative flex h-full overflow-hidden rounded-[20px] border border-border-soft bg-surface-muted shadow-[0_30px_120px_rgba(0,0,0,0.18)] dark:shadow-[0_30px_120px_rgba(0,0,0,0.35)]">
+
         {/* Sidebar container wrapper for sliding */}
         <div
           className={cn(
-            "absolute inset-y-0 left-0 z-20 transition-transform duration-300 ease-out",
+            "absolute inset-y-0 left-0 z-20 transition-transform duration-250 ease-out",
             isCollapsed ? "translate-x-[-390px]" : "translate-x-0"
           )}
         >

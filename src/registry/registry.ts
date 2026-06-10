@@ -256,6 +256,18 @@ export const registryItems: RegistryItem[] = [
     date: formatDate(0),
     mediaPoster: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
   },
+  {
+    id: "ascii-video",
+    name: "Ascii Video",
+    title: "ASCII Video Player",
+    category: "Layout",
+    sourceFile: "ascii-video.tsx",
+    files: componentFile("ascii-video.tsx"),
+    description: "A highly optimized, interactive real-time video-to-ASCII rendering player with custom retro filters and visualizers.",
+    dependencies: ["motion", "tailwindcss", "lucide-react"],
+    date: formatDate(0),
+    mediaPoster: "https://images.pexels.com/video-files/3209828/thumbnails/video-placeholder-974.jpg",
+  },
 ];
 
 export const componentGroups: ComponentGroup[] = [
@@ -287,6 +299,7 @@ export const componentGroups: ComponentGroup[] = [
       { label: "Song Player", itemId: "song-player" },
       { label: "Tunnel Slider", itemId: "tunnel-slider" },
       { label: "Stacked Cards", itemId: "stacked-cards" },
+      { label: "Ascii Video", itemId: "ascii-video" },
     ],
   },
   {

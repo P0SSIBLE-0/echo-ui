@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useId, useMemo, useRef, useState, useEffect } from "react";
-import { motion, useMotionValue, useSpring, animate } from "framer-motion";
+import React, { useId, useMemo, useRef, useState, useEffect, useCallback } from "react";
+import { motion, useMotionValue, useSpring, animate } from "motion/react";
 
 export function GooeyButton() {
   const uniqueId = useId();
@@ -11,6 +11,7 @@ export function GooeyButton() {
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const displacementRef = useRef<SVGFEDisplacementMapElement>(null);
+  const rectRef = useRef<DOMRect | null>(null);
   const [isPressed, setIsPressed] = useState(false);
   const blobSize = 30;
 
@@ -43,39 +44,38 @@ export function GooeyButton() {
     };
   };
 
-  // Track cursor position globally with a threshold check relative to container bounds
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isPressed || !containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-
-      // Check if mouse cursor is within the bounds of the outer container
-      const isInsideContainer = (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
-      );
-
-      if (isInsideContainer) {
-        // Track relative to the parent container coordinate space directly
-        mouseX.set(e.clientX - rect.left - blobSize / 2);
-        mouseY.set(e.clientY - rect.top - blobSize / 2);
-        scale.set(1);
-      } else {
-        scale.set(0);
-      }
-    };
-
-    const handleMouseUp = () => setIsPressed(false);
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
+  // Scoped mouse move handler (only fires within container, not globally)
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (isPressed || !containerRef.current) return;
+    // Cache rect on move to avoid layout thrashing
+    if (!rectRef.current) {
+      rectRef.current = containerRef.current.getBoundingClientRect();
+    }
+    const rect = rectRef.current;
+    mouseX.set(e.clientX - rect.left - blobSize / 2);
+    mouseY.set(e.clientY - rect.top - blobSize / 2);
+    scale.set(1);
   }, [isPressed, mouseX, mouseY, scale]);
+
+  const handleMouseEnter = useCallback(() => {
+    // Refresh cached rect on enter (handles scroll/resize)
+    if (containerRef.current) {
+      rectRef.current = containerRef.current.getBoundingClientRect();
+    }
+    scale.set(1);
+  }, [scale]);
+
+  const handleMouseLeave = useCallback(() => {
+    scale.set(0);
+    rectRef.current = null;
+  }, [scale]);
+
+  // Global mouseup handler (needed for drag release outside container)
+  useEffect(() => {
+    const handleMouseUp = () => setIsPressed(false);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => window.removeEventListener("mouseup", handleMouseUp);
+  }, []);
 
   const handleMouseDown = () => {
     setIsPressed(true);
@@ -94,6 +94,9 @@ export function GooeyButton() {
   return (
     <div
       ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className="relative w-full max-w-[500px] h-[400px] flex items-center justify-center select-none bg-gray-100 rounded-md overflow-hidden border border-border-soft/60 group"
     >
       {/* SVG Filters */}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ChevronDown, PanelLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { componentGroups } from "@/registry/registry";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +22,10 @@ export function Sidebar({ activeItemId, onToggleCollapse, onItemClick }: Sidebar
   const [isGrouped, setIsGrouped] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem("sidebar-grouped");
-    if (saved !== null) {
-      setIsGrouped(saved === "true");
+    const stored = localStorage.getItem("sidebar-grouped");
+    if (stored !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsGrouped(stored !== "false");
     }
   }, []);
 
@@ -82,7 +83,7 @@ export function Sidebar({ activeItemId, onToggleCollapse, onItemClick }: Sidebar
   }
 
   return (
-    <aside className="absolute left-[8px] top-[2px] z-20 flex h-[calc(100dvh-4px)] w-[350px] flex-col overflow-hidden rounded-[22px] bg-[#111111] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_24px_70px_rgba(0,0,0,0.42)] transition-transform duration-300 ease-out">
+    <aside className="absolute left-[8px] top-[2px] z-100 flex h-[calc(100dvh-20px)] w-70 md:w-[350px] flex-col overflow-hidden rounded-[22px] bg-[#111111] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_24px_70px_rgba(0,0,0,0.42)] transition-transform duration-300 ease-out">
       <div className="pointer-events-none absolute inset-0 rounded-[26px] shadow-[inset_18px_18px_34px_rgba(255,255,255,0.035),inset_-22px_-18px_44px_rgba(255,255,255,0.045)]" />
 
       {/* Top action bar */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Code2, Maximize2, Minimize2, RefreshCw } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ export function PreviewToolbar({
   onOpenSource,
 }: PreviewToolbarProps) {
   return (
-    <div className="absolute right-[20px] top-[19px] z-30 flex rounded-full border border-border-soft bg-surface p-[7px] text-foreground shadow-xl space-x-2 shadow-black/5 dark:shadow-black/10">
+    <div className="absolute right-[20px] top-[19px] z-20 flex rounded-full border border-border-soft bg-surface p-[7px] text-foreground shadow-xl space-x-2 shadow-black/5 dark:shadow-black/10">
       <ToolbarButton
         label={isFullscreen ? "Exit fullscreen" : "Fullscreen preview"}
         onClick={onToggleFullscreen}

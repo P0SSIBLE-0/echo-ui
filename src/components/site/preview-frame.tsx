@@ -1,11 +1,19 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { PreviewToolbar } from "@/components/site/preview-toolbar";
-import { SourceDrawer } from "@/components/site/source-drawer";
 import { RegistryComponentRenderer } from "@/registry/component-renderer";
 import type { RegistryItem } from "@/registry/registry";
+
+const SourceDrawer = dynamic(
+  () =>
+    import("@/components/site/source-drawer").then((m) => ({
+      default: m.SourceDrawer,
+    })),
+  { ssr: false }
+);
 
 type PreviewFrameProps = {
   item: RegistryItem;
@@ -37,13 +45,11 @@ export function PreviewFrame({ item }: PreviewFrameProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [sourceOpen]);
 
-  const [prevItemId, setPrevItemId] = useState(item.id);
-  if (item.id !== prevItemId) {
-    setPrevItemId(item.id);
+  useEffect(() => {
     setSourceOpen(false);
     setCopied(false);
     setDownloaded(false);
-  }
+  }, [item.id]);
 
   const handleReplay = useCallback(() => {
     setPreviewKey((value) => value + 1);
@@ -93,14 +99,14 @@ export function PreviewFrame({ item }: PreviewFrameProps) {
         onOpenSource={() => setSourceOpen(true)}
       />
 
-      <div className="relative grid h-full place-items-center px-6 pb-12 pt-3">
+      <div className="relative grid h-full place-items-center p-2 md:px-4 pb-12 pt-3">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${item.id}-${previewKey}`}
-            initial={{ opacity: 0, y: 16, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 26, filter: 'blur(8px)', scale: 0.85 }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.8 }}
+            transition={{ duration: 0.2, ease: [0.8, .45, 0.36, 1] }}
             className="size-full flex items-center justify-center @container"
           >
             <RegistryComponentRenderer itemId={item.id} />

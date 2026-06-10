@@ -1,23 +1,141 @@
 "use client";
 
-import { AsciiReveal } from "@/registry/components/ascii-reveal";
-import { ClickyButton } from "@/registry/components/clicky-button";
-import { CurvedTextMarquee } from "@/registry/components/curved-text-marquee";
-import { ExpandableTab } from "@/registry/components/expandable-tab";
-import { GenieModal } from "@/registry/components/genie-modal";
-import { GooeyButton } from "@/registry/components/gooey-button";
-import { GridDisclosure } from "@/registry/components/grid-disclosure";
-import { HoldToDelete } from "@/registry/components/hold-to-delete";
-import LetterSwap from "@/registry/components/letter-swap";
-import MagneticButton from "@/registry/components/magnetic-button";
-import { PhysicsReceipt } from "@/registry/components/physics-receipt";
-import { Portfolio } from "@/registry/components/portfolio";
-import { SongPlayer } from "@/registry/components/song-player";
-import SpotlightGallery from "@/registry/components/spotlight-gallery";
-import TextScramble from "@/registry/components/text-scramble";
-import { StackedCards } from "@/registry/components/stacked-cards";
-import { TunnelSlider } from "@/registry/components/tunnel-slider";
+import dynamic from "next/dynamic";
 import type { RegistryItem } from "@/registry/registry";
+
+// Lazy load every component — only the active one is downloaded and executed
+const LazyClickyButton = dynamic(
+  () =>
+    import("@/registry/components/clicky-button").then((m) => ({
+      default: m.ClickyButton,
+    })),
+  { ssr: false }
+);
+
+const LazyGooeyButton = dynamic(
+  () =>
+    import("@/registry/components/gooey-button").then((m) => ({
+      default: m.GooeyButton,
+    })),
+  { ssr: false }
+);
+
+const LazyHoldToDelete = dynamic(
+  () =>
+    import("@/registry/components/hold-to-delete").then((m) => ({
+      default: m.HoldToDelete,
+    })),
+  { ssr: false }
+);
+
+const LazyPhysicsReceipt = dynamic(
+  () =>
+    import("@/registry/components/physics-receipt").then((m) => ({
+      default: m.PhysicsReceipt,
+    })),
+  { ssr: false }
+);
+
+const LazyGenieModal = dynamic(
+  () =>
+    import("@/registry/components/genie-modal").then((m) => ({
+      default: m.GenieModal,
+    })),
+  { ssr: false }
+);
+
+const LazyGridDisclosure = dynamic(
+  () =>
+    import("@/registry/components/grid-disclosure").then((m) => ({
+      default: m.GridDisclosure,
+    })),
+  { ssr: false }
+);
+
+const LazyMagneticButton = dynamic(
+  () => import("@/registry/components/magnetic-button"),
+  { ssr: false }
+);
+
+const LazyExpandableTab = dynamic(
+  () =>
+    import("@/registry/components/expandable-tab").then((m) => ({
+      default: m.ExpandableTab,
+    })),
+  { ssr: false }
+);
+
+const LazySongPlayer = dynamic(
+  () =>
+    import("@/registry/components/song-player").then((m) => ({
+      default: m.SongPlayer,
+    })),
+  { ssr: false }
+);
+
+const LazyPortfolio = dynamic(
+  () =>
+    import("@/registry/components/portfolio").then((m) => ({
+      default: m.Portfolio,
+    })),
+  { ssr: false }
+);
+
+const LazyAsciiReveal = dynamic(
+  () =>
+    import("@/registry/components/ascii-reveal").then((m) => ({
+      default: m.AsciiReveal,
+    })),
+  { ssr: false }
+);
+
+const LazySpotlightGallery = dynamic(
+  () => import("@/registry/components/spotlight-gallery"),
+  { ssr: false }
+);
+
+const LazyTunnelSlider = dynamic(
+  () =>
+    import("@/registry/components/tunnel-slider").then((m) => ({
+      default: m.TunnelSlider,
+    })),
+  { ssr: false }
+);
+
+const LazyTextScramble = dynamic(
+  () => import("@/registry/components/text-scramble"),
+  { ssr: false }
+);
+
+const LazyLetterSwap = dynamic(
+  () => import("@/registry/components/letter-swap"),
+  { ssr: false }
+);
+
+const LazyCurvedTextMarquee = dynamic(
+  () =>
+    import("@/registry/components/curved-text-marquee").then((m) => ({
+      default: m.CurvedTextMarquee,
+    })),
+  { ssr: false }
+);
+
+const LazyStackedCards = dynamic(
+  () =>
+    import("@/registry/components/stacked-cards").then((m) => ({
+      default: m.StackedCards,
+    })),
+  { ssr: false }
+);
+
+const LazyAsciiVideo = dynamic(
+  () =>
+    import("@/registry/components/ascii-video").then((m) => ({
+      default: m.AsciiVideo,
+    })),
+  { ssr: false }
+);
+
 
 type RegistryComponentRendererProps = {
   itemId: RegistryItem["id"];
@@ -28,29 +146,29 @@ export function RegistryComponentRenderer({
 }: RegistryComponentRendererProps) {
   switch (itemId) {
     case "clicky-button":
-      return <ClickyButton />;
+      return <LazyClickyButton />;
     case "gooey-button":
-      return <GooeyButton />;
+      return <LazyGooeyButton />;
     case "hold-to-delete":
-      return <HoldToDelete />;
+      return <LazyHoldToDelete />;
     case "physics-receipt":
-      return <PhysicsReceipt />;
+      return <LazyPhysicsReceipt />;
     case "genie-modal":
-      return <GenieModal />;
+      return <LazyGenieModal />;
     case "grid-disclosure":
-      return <GridDisclosure />;
+      return <LazyGridDisclosure />;
     case "magnetic-button":
-      return <MagneticButton />;
+      return <LazyMagneticButton />;
     case "expandable-tab":
-      return <ExpandableTab />;
+      return <LazyExpandableTab />;
     case "song-player":
-      return <SongPlayer />;
+      return <LazySongPlayer />;
     case "portfolio":
-      return <Portfolio />;
+      return <LazyPortfolio />;
     case "ascii-reveal":
       return (
         <div className="grid min-h-[350px] place-items-center rounded-[20px] bg-[#111111] p-6">
-          <AsciiReveal
+          <LazyAsciiReveal
             src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600"
             alt="Ascii Portrait"
             className="h-[275px] w-[220px] rounded-lg shadow-2xl"
@@ -65,17 +183,19 @@ export function RegistryComponentRenderer({
         </div>
       );
     case "spotlight-gallery":
-      return <SpotlightGallery />;
+      return <LazySpotlightGallery />;
     case "tunnel-slider":
-      return <TunnelSlider />;
+      return <LazyTunnelSlider />;
     case "text-scramble":
-      return <TextScramble />;
+      return <LazyTextScramble />;
     case "letter-swap":
-      return <LetterSwap />;
+      return <LazyLetterSwap />;
     case "curved-text-marquee":
-      return <CurvedTextMarquee />;
+      return <LazyCurvedTextMarquee />;
     case "stacked-cards":
-      return <StackedCards />;
+      return <LazyStackedCards />;
+    case "ascii-video":
+      return <LazyAsciiVideo />;
     default:
       return null;
   }

@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useInView } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { memo, useRef } from "react";
 import { ArrowRight, Code2, Play, Sparkles } from "lucide-react";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { registryItems, type RegistryItem } from "@/registry/registry";
@@ -63,18 +64,22 @@ export function ComponentsCatalog() {
   );
 }
 
-function ComponentMediaCard({
+const ComponentMediaCard = memo(function ComponentMediaCard({
   item,
   index,
 }: {
   item: RegistryItem;
   index: number;
 }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
   return (
     <motion.article
+      ref={ref}
       initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.025 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+      transition={{ delay: 0.05 }}
       whileHover={{ y: -4 }}
       className="group relative flex h-[280px] flex-col overflow-hidden rounded-[10px] border border-border-soft bg-surface p-3 shadow-[0_14px_38px_rgba(0,0,0,0.08)] transition duration-300 hover:bg-surface-muted dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.025)]"
     >
@@ -113,4 +118,4 @@ function ComponentMediaCard({
       </Link>
     </motion.article>
   );
-}
+});

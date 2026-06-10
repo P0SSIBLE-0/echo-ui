@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import React, { useRef, useMemo } from "react";
-import { useAnimationFrame } from "framer-motion";
+import { useAnimationFrame } from "motion/react";
 
 const DEFAULT_IMAGES = [
   "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600",
