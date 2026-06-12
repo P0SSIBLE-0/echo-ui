@@ -36,7 +36,7 @@ export default function ViewLayout({ children }: ViewLayoutProps) {
         {/* Sidebar container wrapper for sliding */}
         <div
           className={cn(
-            "absolute inset-y-0 left-0 z-20 transition-transform duration-250 ease-out",
+            "absolute inset-y-0 left-0 z-30 transition-transform duration-250 ease-out",
             isCollapsed ? "translate-x-[-390px]" : "translate-x-0"
           )}
         >

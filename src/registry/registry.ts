@@ -268,6 +268,30 @@ export const registryItems: RegistryItem[] = [
     date: formatDate(0),
     mediaPoster: "https://images.pexels.com/video-files/3209828/thumbnails/video-placeholder-974.jpg",
   },
+  {
+    id: "dropdown-menu",
+    name: "Dropdown Menu",
+    title: "Interactive Dropdown Menu",
+    category: "Layout",
+    sourceFile: "dropdown-menu.tsx",
+    files: componentFile("dropdown-menu.tsx"),
+    description: "A premium, keyboard-accessible dropdown menu featuring submenus, list items, sliding highlights, and theme selection.",
+    dependencies: ["motion", "tailwindcss", "lucide-react"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+  },
+  {
+    id: "sphere-gallery",
+    name: "Sphere Gallery",
+    title: "3D Sphere Gallery",
+    category: "Portfolio",
+    sourceFile: "sphere-gallery.tsx",
+    files: componentFile("sphere-gallery.tsx"),
+    description: "A pseudo-3D perspective image gallery arranged in a rotating spherical structure with interactive drag controls and smooth focus transitions.",
+    dependencies: ["motion", "tailwindcss", "lucide-react"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600",
+  },
 ];
 
 export const componentGroups: ComponentGroup[] = [
@@ -300,6 +324,7 @@ export const componentGroups: ComponentGroup[] = [
       { label: "Tunnel Slider", itemId: "tunnel-slider" },
       { label: "Stacked Cards", itemId: "stacked-cards" },
       { label: "Ascii Video", itemId: "ascii-video" },
+      { label: "Dropdown Menu", itemId: "dropdown-menu" },
     ],
   },
   {
@@ -307,6 +332,7 @@ export const componentGroups: ComponentGroup[] = [
     items: [
       { label: "Portfolio", itemId: "portfolio" },
       { label: "Spotlight Gallery", itemId: "spotlight-gallery" },
+      { label: "Sphere Gallery", itemId: "sphere-gallery" },
     ],
   },
   {

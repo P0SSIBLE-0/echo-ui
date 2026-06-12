@@ -25,7 +25,9 @@ export function generateMetadata({ params }: ComponentPageProps) {
 
 export default async function ComponentPage({ params }: ComponentPageProps) {
   const { id } = await params;
+  console.log("ComponentPage: id =", id);
   const item = getRegistryItem(id);
+  console.log("ComponentPage: item found =", !!item);
 
   if (!item) {
     notFound();

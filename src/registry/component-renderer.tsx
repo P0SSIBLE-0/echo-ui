@@ -136,6 +136,23 @@ const LazyAsciiVideo = dynamic(
   { ssr: false }
 );
 
+const LazyDropdownMenu = dynamic(
+  () =>
+    import("@/registry/components/dropdown-menu").then((m) => ({
+      default: m.DropdownMenu,
+    })),
+  { ssr: false }
+);
+
+const LazySphereGallery = dynamic(
+  () =>
+    import("@/registry/components/sphere-gallery").then((m) => ({
+      default: m.SphereGallery,
+    })),
+  { ssr: false }
+);
+
+
 
 type RegistryComponentRendererProps = {
   itemId: RegistryItem["id"];
@@ -196,6 +213,10 @@ export function RegistryComponentRenderer({
       return <LazyStackedCards />;
     case "ascii-video":
       return <LazyAsciiVideo />;
+    case "dropdown-menu":
+      return <LazyDropdownMenu />;
+    case "sphere-gallery":
+      return <LazySphereGallery />;
     default:
       return null;
   }

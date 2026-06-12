@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { PreviewToolbar } from "@/components/site/preview-toolbar";
 import { RegistryComponentRenderer } from "@/registry/component-renderer";
 import type { RegistryItem } from "@/registry/registry";
+import { cn } from "@/lib/utils";
 
 const SourceDrawer = dynamic(
   () =>
@@ -99,7 +100,12 @@ export function PreviewFrame({ item }: PreviewFrameProps) {
         onOpenSource={() => setSourceOpen(true)}
       />
 
-      <div className="relative grid h-full place-items-center p-2 md:px-4 pb-12 pt-3">
+      <div
+        className={cn(
+          "relative grid h-full place-items-center p-2 md:px-4 pb-12 pt-3 transition-transform duration-300 ease-out z-10",
+          sourceOpen ? "lg:translate-x-[240px]" : "translate-x-0"
+        )}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={`${item.id}-${previewKey}`}
@@ -116,14 +122,26 @@ export function PreviewFrame({ item }: PreviewFrameProps) {
 
       <AnimatePresence>
         {sourceOpen ? (
-          <SourceDrawer
-            item={item}
-            onClose={() => setSourceOpen(false)}
-            onCopy={handleCopy}
-            onDownload={handleDownload}
-            copied={copied}
-            downloaded={downloaded}
-          />
+          <>
+            <motion.button
+              type="button"
+              aria-label="Close source drawer"
+              className="absolute inset-0 z-25 bg-black/50 backdrop-blur-xs rounded-none cursor-pointer border-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setSourceOpen(false)}
+            />
+            <SourceDrawer
+              item={item}
+              onClose={() => setSourceOpen(false)}
+              onCopy={handleCopy}
+              onDownload={handleDownload}
+              copied={copied}
+              downloaded={downloaded}
+            />
+          </>
         ) : null}
       </AnimatePresence>
     </>

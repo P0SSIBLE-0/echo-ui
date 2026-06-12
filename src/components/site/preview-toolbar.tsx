@@ -59,7 +59,7 @@ function ToolbarButton({
       whileTap={{ scale: 0.94 }}
       transition={{ type: "spring", stiffness: 250, damping: 20 }}
       className={cn(
-        "grid size-10 place-items-center rounded-full transition",
+        "grid size-7 md:size-10 place-items-center rounded-full transition",
         highlight
           ? "bg-foreground text-background"
           : "bg-foreground/6 text-foreground hover:bg-foreground/12",
