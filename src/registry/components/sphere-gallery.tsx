@@ -77,6 +77,7 @@ export function SphereGallery({
   const hoveredIdxRef = useRef<number | null>(null);
   const pointerStart = useRef({ x: 0, y: 0 });
   const anglesStart = useRef({ x: 0, y: 0 });
+  const hasDraggedRef = useRef(false);
 
   // Synced copies of React state for RAF access (avoid stale closures, updated on every render)
   const activeIdRef = useRef(activeId);
@@ -308,6 +309,7 @@ export function SphereGallery({
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (activeIdRef.current !== null || selAnim.current.mode !== "idle") return;
     isDraggingRef.current = true;
+    hasDraggedRef.current = false;
     pointerStart.current = { x: e.clientX, y: e.clientY };
     anglesStart.current = { ...displayAngles.current };
     targetAngles.current = { ...displayAngles.current };
@@ -325,6 +327,9 @@ export function SphereGallery({
     if (isDraggingRef.current) {
       const dx = e.clientX - pointerStart.current.x;
       const dy = e.clientY - pointerStart.current.y;
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        hasDraggedRef.current = true;
+      }
       targetAngles.current = {
         x: anglesStart.current.x - dy * 0.0055,
         y: anglesStart.current.y + dx * 0.0055,
@@ -375,7 +380,7 @@ export function SphereGallery({
       onPointerLeave={handlePointerLeave}
       style={{ cursor: activeId ? "default" : "grab" }}
       className={cn(
-        "relative w-full h-[490px] md:h-[540px] flex items-center justify-center overflow-hidden bg-transparent select-none",
+        "relative w-full h-[490px] md:h-[540px] flex items-center justify-center overflow-hidden bg-transparent select-none touch-none",
         className
       )}
     >
@@ -385,7 +390,7 @@ export function SphereGallery({
           <button
             key={item.id}
             ref={(el) => { cardRefs.current[idx] = el; }}
-            onClick={() => selAnim.current.mode === "idle" && handleSelect(item.id)}
+            onClick={() => !hasDraggedRef.current && selAnim.current.mode === "idle" && handleSelect(item.id)}
             onKeyDown={(e) => {
               if ((e.key === "Enter" || e.key === " ") && selAnim.current.mode === "idle") {
                 e.preventDefault();
