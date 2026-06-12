@@ -43,8 +43,8 @@ const ImageCard = React.memo(({ url, title }: { url: string; title: string }) =>
     <img
       src={url}
       alt={title}
-      width={100}
-      height={133}
+      width={86}
+      height={114}
       draggable={false}
       className="w-full h-full object-cover select-none"
     />
@@ -123,7 +123,7 @@ export function SphereGallery({
       };
 
       const w = rect.width;
-      const r = w < 450 ? 130 : w < 640 ? 180 : w < 1024 ? 230 : 285;
+      const r = w < 450 ? 140 : w < 640 ? 195 : w < 1024 ? 250 : 305;
       setDimensions({ rx: r, ry: r, rz: r });
     };
 
@@ -235,7 +235,7 @@ export function SphereGallery({
 
         const tX = selected ? (isCurrentSelected ? 0 : cs[i].cx) : rotX;
         const tY = selected ? (isCurrentSelected ? 0 : cs[i].cy) : rotY;
-        const tS = selected ? (isCurrentSelected ? 2.0 : 0.2) : rotScale;
+        const tS = selected ? (isCurrentSelected ? 3.2 : 0.2) : rotScale;
         const tO = selected ? (isCurrentSelected ? 1.0 : 0) : rotOpacity;
         const tZ = selected ? (isCurrentSelected ? 100 : 0) : (hovered === i ? 80 : rotZ);
 
@@ -264,7 +264,7 @@ export function SphereGallery({
       // ── Phase 6: Transition detection ─────────────────────────
       if (sel.mode === "selecting") {
         const sc = cs[sel.selectedIdx];
-        if (sc && Math.abs(sc.cs - 2.0) < 0.05 && Math.abs(sc.cx) < 2 && Math.abs(sc.cy) < 2) {
+        if (sc && Math.abs(sc.cs - 3.5) < 0.05 && Math.abs(sc.cx) < 2 && Math.abs(sc.cy) < 2) {
           sel.mode = "selected";
         }
       }
@@ -378,6 +378,11 @@ export function SphereGallery({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onPointerLeave={handlePointerLeave}
+      onClick={() => {
+        if (activeIdRef.current !== null) {
+          handleSelect(null);
+        }
+      }}
       style={{ cursor: activeId ? "default" : "grab" }}
       className={cn(
         "relative w-full h-[490px] md:h-[540px] flex items-center justify-center overflow-hidden bg-transparent select-none touch-none",
@@ -390,7 +395,12 @@ export function SphereGallery({
           <button
             key={item.id}
             ref={(el) => { cardRefs.current[idx] = el; }}
-            onClick={() => !hasDraggedRef.current && selAnim.current.mode === "idle" && handleSelect(item.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!hasDraggedRef.current && selAnim.current.mode === "idle") {
+                handleSelect(item.id);
+              }
+            }}
             onKeyDown={(e) => {
               if ((e.key === "Enter" || e.key === " ") && selAnim.current.mode === "idle") {
                 e.preventDefault();
@@ -402,7 +412,7 @@ export function SphereGallery({
             aria-label={`View details of ${item.title}`}
             style={{ willChange: "transform, opacity" }}
             className={cn(
-              "absolute w-[75px] h-[100px] sm:w-[100px] sm:h-[133px] rounded-[2px] overflow-hidden border border-zinc-200/40 dark:border-zinc-800/40 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:focus-visible:ring-zinc-500 cursor-pointer bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300",
+              "absolute w-[64px] h-[85px] sm:w-[86px] sm:h-[114px] rounded-[2px] overflow-hidden border border-zinc-800/30 dark:border-zinc-800/40 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:focus-visible:ring-zinc-500 cursor-pointer bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300",
               activeId === item.id
                 ? "pointer-events-auto border-zinc-400 dark:border-zinc-500"
                 : "pointer-events-auto hover:border-zinc-400 dark:hover:border-zinc-600"
@@ -422,28 +432,15 @@ export function SphereGallery({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: -10 }}
             transition={{ type: "tween", ease: [0.8, -0.4, 0.2, 1.2] }}
-            onClick={() => handleSelect(null)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSelect(null);
+            }}
             className="absolute top-5 right-5 z-50 p-2.5 rounded-full bg-zinc-950/80 hover:bg-zinc-900/90 border border-white/10 text-white cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
             aria-label="Close zoomed image"
           >
             <X size={18} />
           </motion.button>
-        )}
-
-        {activeId && selectedItem && (
-          <motion.div
-            key="caption-panel"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
-            transition={{ type: "spring", stiffness: 290, damping: 25, delay: 0.05 }}
-            className="absolute bottom-5 left-5 right-5 z-40 max-w-md bg-zinc-950/90 backdrop-blur-md p-5 rounded-[4px] border border-white/10 text-white shadow-2xl"
-          >
-            <h3 className="font-semibold text-xs tracking-widest uppercase text-white/90">{selectedItem.title}</h3>
-            <p className="text-zinc-400 text-xs mt-2 leading-relaxed">
-              {selectedItem.description}
-            </p>
-          </motion.div>
         )}
       </AnimatePresence>
     </div>
