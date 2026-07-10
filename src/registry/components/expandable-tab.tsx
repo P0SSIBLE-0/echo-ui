@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -70,25 +70,6 @@ const TRANSITION_CONFIG = {
   damping: 25,
 } as const;
 
-// Custom hook to measure the element height dynamically
-function useMeasure() {
-  const [element, setRef] = useState<HTMLElement | null>(null);
-  const [rect, setRect] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    if (!element) return;
-    const observer = new ResizeObserver((entries) => {
-      if (!entries || entries.length === 0) return;
-      const { width, height } = entries[0].target.getBoundingClientRect();
-      setRect({ width, height });
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [element]);
-
-  return [setRef, rect] as const;
-}
-
 export function ExpandableTab({
   tabs = DEFAULT_TABS,
   defaultActiveTabId = "dashboard",
@@ -96,8 +77,7 @@ export function ExpandableTab({
 }: ExpandableTabProps) {
   const [activeTabId, setActiveTabId] = useState(defaultActiveTabId);
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-
-  const [ref, { height }] = useMeasure();
+  const shouldReduceMotion = useReducedMotion();
 
   const handleTabClick = (tabId: string) => {
     if (activeTabId === tabId) {
@@ -111,58 +91,93 @@ export function ExpandableTab({
 
   const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0];
   const hasMenu = !!(activeTab.menuItems && activeTab.menuItems.length > 0 && isMenuOpen);
+  const [dropdownState, setDropdownState] = useState<
+    "closed" | "pre-open" | "open" | "closing"
+  >(hasMenu ? "pre-open" : "closed");
 
+  useEffect(() => {
+    let frameId: number | undefined;
+    let closeTimer: ReturnType<typeof setTimeout> | undefined;
 
+    if (hasMenu) {
+      frameId = requestAnimationFrame(() => {
+        setDropdownState((current) =>
+          current === "closed" ? "pre-open" : "open"
+        );
+        frameId = requestAnimationFrame(() => setDropdownState("open"));
+      });
+    } else {
+      frameId = requestAnimationFrame(() => {
+        setDropdownState((current) =>
+          current === "closed" ? "closed" : "closing"
+        );
+        const closeDuration =
+          parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue(
+              "--dropdown-close-dur"
+            )
+          ) || 150;
+        closeTimer = setTimeout(() => setDropdownState("closed"), closeDuration);
+      });
+    }
+
+    return () => {
+      if (frameId !== undefined) cancelAnimationFrame(frameId);
+      if (closeTimer !== undefined) clearTimeout(closeTimer);
+    };
+  }, [hasMenu]);
+
+  const dropdownClassName =
+    dropdownState === "open"
+      ? "is-open"
+      : dropdownState === "closing"
+        ? "is-closing"
+        : "";
 
   return (
-    <div className="w-full max-w-[250px] flex flex-col items-center justify-end min-h-[200px]">
-      {/* Popover Menu Panel (Always mounted, resizes height dynamically) */}
-      <motion.div
-        layout
-        initial={false}
-        animate={{
-          height: hasMenu ? (height ? height + 2 : "auto") : 0,
-          opacity: hasMenu ? 1 : 0,
-          scale: hasMenu ? 1 : 0.95,
-          borderWidth: hasMenu ? "1px" : "0px",
-        }}
-        transition={TRANSITION_CONFIG}
-        className="w-full overflow-hidden rounded-2xl bg-white text-black shadow-xl shadow-black/5 border-slate-100 border-solid"
-        style={{
-          pointerEvents: hasMenu ? "auto" : "none",
-        }}
-      >
-        <AnimatePresence mode="popLayout" initial={false}>
-          {hasMenu && (
+    <div className="relative w-full max-w-[250px] flex flex-col items-center justify-end min-h-[200px]">
+      {/* The menu is absolutely anchored to the dock, so its width always matches it. */}
+      {dropdownState !== "closed" && (
+        <div
+          className={`t-dropdown absolute inset-x-0 bottom-14 z-10 overflow-hidden rounded-2xl border border-slate-100 bg-white text-black shadow-xl shadow-black/5 ${dropdownClassName}`}
+          data-origin="bottom-center"
+        >
             <motion.div
-              ref={ref}
               key={activeTab.id}
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.96 }}
-              transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-              className="p-2 grid gap-0.5"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
+              }
+              className="grid gap-0.5 p-2"
+              role="menu"
             >
               {activeTab.menuItems?.map((menuItem, index) => {
                 const MenuIcon = menuItem.icon;
                 return (
-                  <motion.div
+                  <motion.button
                     key={menuItem.label}
+                    type="button"
+                    role="menuitem"
                     initial={{
-                      x: -25,
-                      filter: "blur(2px)",
+                      opacity: 0,
+                      x: shouldReduceMotion ? 0 : -8,
+                      filter: shouldReduceMotion ? "blur(0px)" : "blur(2px)",
                     }}
                     animate={{
+                      opacity: 1,
                       x: 0,
                       filter: "blur(0px)",
                     }}
                     transition={{
-                      duration: 0.23,
-                      ease: "easeInOut",
-                      delay: index * 0.02,
+                      duration: shouldReduceMotion ? 0 : 0.2,
+                      ease: [0.22, 1, 0.36, 1],
+                      delay: shouldReduceMotion ? 0 : index * 0.03,
                     }}
                     onClick={() => menuItem.onClick?.()}
-                    className="flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2 hover:bg-slate-50 transition-colors"
+                    className="flex h-8 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
                   >
                     <span className="text-slate-400">
                       <MenuIcon size={12} />
@@ -171,13 +186,12 @@ export function ExpandableTab({
                       {menuItem.label}
                     </span>
                     <ArrowRight size={10} className="ml-auto text-slate-300" />
-                  </motion.div>
+                  </motion.button>
                 );
               })}
             </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+        </div>
+      )}
 
       {/* Tab Dock Bar */}
       <motion.div
