@@ -184,7 +184,7 @@ export function RegistryComponentRenderer({
       return <LazyPortfolio />;
     case "ascii-reveal":
       return (
-        <div className="grid min-h-[350px] place-items-center rounded-[20px] bg-[#111111] p-6">
+        <div className="grid min-h-[350px] min-w-40 place-items-center rounded-[10px] bg-[#111111] p-6">
           <LazyAsciiReveal
             src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600"
             alt="Ascii Portrait"
@@ -216,7 +216,11 @@ export function RegistryComponentRenderer({
     case "dropdown-menu":
       return <LazyDropdownMenu />;
     case "sphere-gallery":
-      return <LazySphereGallery />;
+      return (
+        <div className="grid min-h-[480px] w-full rounded-2xl bg-zinc-950 place-items-center px-2 py-8 sm:min-h-[560px]">
+          <LazySphereGallery size={520} />
+        </div>
+      );
     default:
       return null;
   }

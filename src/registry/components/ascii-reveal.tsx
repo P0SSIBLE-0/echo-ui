@@ -266,7 +266,7 @@ export function AsciiReveal({
 
   return (
     <div
-      className={`relative overflow-hidden bg-[#111] ${className}`}
+      className={`relative min-w-40 rounded-md overflow-hidden bg-[#111] ${className}`}
       style={{ aspectRatio: `${aspectWidth} / ${aspectHeight}` }}
     >
       <motion.img

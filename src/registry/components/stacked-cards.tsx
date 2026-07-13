@@ -139,14 +139,14 @@ export function StackedCards({
         <div className="flex items-center gap-5 mt-6">
           <button
             type="button" onClick={() => handleSwipe("left")} aria-label="Skip destination"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-50 border border-zinc-100 text-rose-500 shadow-sm transition-all hover:scale-110 hover:bg-rose-50 hover:border-rose-100 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 cursor-pointer"
+            className="flex size-11 items-center justify-center rounded-full bg-zinc-50 border border-zinc-100 text-rose-500 shadow-sm transition-scale duration-200 hover:scale-110 hover:bg-rose-50 hover:border-rose-100 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 cursor-pointer"
           >
             <X size={18} strokeWidth={2.5} aria-hidden="true" />
           </button>
 
           <button
             type="button" onClick={() => handleSwipe("right")} aria-label="Explore destination"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-950 text-white shadow-md transition-all hover:scale-110 hover:bg-zinc-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer"
+            className="flex size-11 items-center justify-center rounded-full bg-zinc-950 text-white shadow-md transition-scale duration-200 hover:scale-110 hover:bg-zinc-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer"
           >
             <Heart size={20} fill="currentColor" strokeWidth={0} aria-hidden="true" />
           </button>

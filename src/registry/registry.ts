@@ -53,6 +53,18 @@ function componentFile(sourceFile: string): RegistryFile[] {
 
 export const registryItems: RegistryItem[] = [
   {
+    id: "sphere-gallery",
+    name: "Sphere Gallery",
+    title: "3D Sphere Gallery",
+    category: "Portfolio",
+    sourceFile: "sphere-gallery.tsx",
+    files: componentFile("sphere-gallery.tsx"),
+    description: "A pseudo-3D perspective image gallery arranged in a rotating spherical structure with interactive drag controls and seamless shared-layout image focus.",
+    dependencies: ["motion", "tailwindcss"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600",
+  },
+  {
     id: "clicky-button",
     name: "Clicky Button",
     title: "Clicky Button",
@@ -279,18 +291,6 @@ export const registryItems: RegistryItem[] = [
     dependencies: ["motion", "tailwindcss", "lucide-react"],
     date: formatDate(0),
     mediaPoster: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
-  },
-  {
-    id: "sphere-gallery",
-    name: "Sphere Gallery",
-    title: "3D Sphere Gallery",
-    category: "Portfolio",
-    sourceFile: "sphere-gallery.tsx",
-    files: componentFile("sphere-gallery.tsx"),
-    description: "A pseudo-3D perspective image gallery arranged in a rotating spherical structure with interactive drag controls and smooth focus transitions.",
-    dependencies: ["motion", "tailwindcss", "lucide-react"],
-    date: formatDate(0),
-    mediaPoster: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600",
   },
 ];
 
