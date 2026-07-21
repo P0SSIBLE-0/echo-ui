@@ -102,8 +102,8 @@ export function PreviewFrame({ item }: PreviewFrameProps) {
 
       <div
         className={cn(
-          "relative grid h-full place-items-center p-2 md:px-4 pb-12 pt-3 transition-transform duration-300 ease-out z-10",
-          sourceOpen ? "lg:translate-x-[240px]" : "translate-x-0"
+          "relative grid h-full rounded-2xl place-items-center md:px-4 pb-8 pt-.5 transition-transform duration-300 ease-out z-10",
+          sourceOpen ? "lg:translate-x-60" : "translate-x-0"
         )}
       >
         <AnimatePresence mode="wait">

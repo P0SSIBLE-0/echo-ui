@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import type { RegistryItem } from "@/registry/registry";
 
@@ -152,7 +153,48 @@ const LazySphereGallery = dynamic(
   { ssr: false }
 );
 
+const LazyTextShimmer = dynamic(
+  () => import("@/registry/components/text-shimmer"),
+  { ssr: false }
+);
 
+const LazyTextCounter = dynamic(
+  () => import("@/registry/components/text-counter"),
+  { ssr: false }
+);
+
+const LazySlideDrawer = dynamic(
+  () => import("@/registry/components/slide-drawer"),
+  { ssr: false }
+);
+
+function SlideDrawerDemo() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative rounded-lg w-full h-full min-h-dvh overflow-hidden flex items-center justify-center">
+      <button
+        onClick={() => setIsOpen(true)}
+        className="px-4 py-2 text-sm font-medium text-white bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors cursor-pointer border border-zinc-800"
+      >
+        Open Drawer
+      </button>
+
+      <LazySlideDrawer
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Drawer Title"
+      >
+        <p className="text-sm text-zinc-300">
+          This is a touch-enabled slide-in drawer.
+        </p>
+        <button
+          onClick={() => setIsOpen(false)}
+          className="px-4 py-1 text-sm my-4 font-semibold rounded hover:bg-gray-100 duration-150 bg-white text-black cursor-pointer">Close</button>
+      </LazySlideDrawer>
+    </div>
+  );
+}
 
 type RegistryComponentRendererProps = {
   itemId: RegistryItem["id"];
@@ -172,6 +214,8 @@ export function RegistryComponentRenderer({
       return <LazyPhysicsReceipt />;
     case "genie-modal":
       return <LazyGenieModal />;
+    case "slide-drawer":
+      return <SlideDrawerDemo />;
     case "grid-disclosure":
       return <LazyGridDisclosure />;
     case "magnetic-button":
@@ -184,9 +228,9 @@ export function RegistryComponentRenderer({
       return <LazyPortfolio />;
     case "ascii-reveal":
       return (
-        <div className="grid min-h-[350px] min-w-40 place-items-center rounded-[10px] bg-[#111111] p-6">
+        <div className="grid aspect-square transition-transform duration-200 min-w-40 place-items-center rounded-lg bg-[#111111] p-4">
           <LazyAsciiReveal
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600"
+            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=764"
             alt="Ascii Portrait"
             className="h-[275px] w-[220px] rounded-lg shadow-2xl"
             columns={35}
@@ -209,6 +253,14 @@ export function RegistryComponentRenderer({
       return <LazyLetterSwap />;
     case "curved-text-marquee":
       return <LazyCurvedTextMarquee />;
+    case "text-shimmer":
+      return (
+        <div >
+          <LazyTextShimmer />
+        </div>
+      );
+    case "text-counter":
+      return <LazyTextCounter />;
     case "stacked-cards":
       return <LazyStackedCards />;
     case "ascii-video":

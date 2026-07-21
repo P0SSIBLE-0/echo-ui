@@ -257,6 +257,30 @@ export const registryItems: RegistryItem[] = [
     mediaPoster: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
   },
   {
+    id: "text-shimmer",
+    name: "Text Shimmer",
+    title: "Text Shimmer Animation",
+    category: "Text Animation",
+    sourceFile: "text-shimmer.tsx",
+    files: componentFile("text-shimmer.tsx"),
+    description: "A production-ready text shimmer animation component using Motion and Tailwind CSS v4, supporting gradient sweeps, letter waves, and customizable glow Sheen.",
+    dependencies: ["motion", "tailwindcss", "lucide-react"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
+  },
+  {
+    id: "text-counter",
+    name: "Text Counter",
+    title: "Text Counter Animation",
+    category: "Text Animation",
+    sourceFile: "text-counter.tsx",
+    files: componentFile("text-counter.tsx"),
+    description: "A smooth, customizable number counter animation with multiple motion controls including spring, bounce, linear, and easeOut.",
+    dependencies: ["motion", "tailwindcss"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
+  },
+  {
     id: "stacked-cards",
     name: "Stacked Cards",
     title: "Stacked Cards",
@@ -292,6 +316,18 @@ export const registryItems: RegistryItem[] = [
     date: formatDate(0),
     mediaPoster: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
   },
+  {
+    id: "slide-drawer",
+    name: "Slide Drawer",
+    title: "Touch-Enabled Slide Drawer",
+    category: "Modal",
+    sourceFile: "slide-drawer.tsx",
+    files: componentFile("slide-drawer.tsx"),
+    description: "A reusable, touch-enabled slide-in drawer UI component with spring physics, drag-to-dismiss gestures, and multi-position support.",
+    dependencies: ["motion", "tailwindcss", "lucide-react"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+  },
 ];
 
 export const componentGroups: ComponentGroup[] = [
@@ -313,7 +349,10 @@ export const componentGroups: ComponentGroup[] = [
   },
   {
     name: "Modal",
-    items: [{ label: "Genie Modal", itemId: "genie-modal" }],
+    items: [
+      { label: "Genie Modal", itemId: "genie-modal" },
+      { label: "Slide Drawer", itemId: "slide-drawer" },
+    ],
   },
   {
     name: "Layout",
@@ -341,6 +380,8 @@ export const componentGroups: ComponentGroup[] = [
       { label: "Text Scramble", itemId: "text-scramble" },
       { label: "Letter Swap", itemId: "letter-swap" },
       { label: "Curved Text Marquee", itemId: "curved-text-marquee" },
+      { label: "Text Shimmer", itemId: "text-shimmer" },
+      { label: "Text Counter", itemId: "text-counter" },
     ],
   },
 ];
