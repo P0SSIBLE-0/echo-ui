@@ -75,8 +75,8 @@ export function StackedCards({
   };
 
   return (
-    <div className={`flex flex-col items-center justify-center w-full max-w-[420px] p-5 select-none ${className}`}>
-      <div className="relative w-full h-[380px] flex justify-center items-center">
+    <div className={`flex flex-col items-center justify-center w-full max--105 p-5 select-none ${className}`}>
+      <div className="relative w-full h-95 flex justify-center items-center">
         {cards.length === 0 ? (
           <div className="text-zinc-400 font-sans text-sm font-medium">No more destinations…</div>
         ) : (
@@ -105,7 +105,7 @@ export function StackedCards({
                     rotate: isTop ? 0 : stackPos * (idx % 2 === 0 ? 3 : -3),
                   }}
                   transition={{ type: "spring", stiffness: 280, damping: 25 }}
-                  className="absolute w-[250px] h-fit bg-white border border-zinc-100 rounded-xl px-3 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing flex flex-col justify-between overflow-hidden"
+                  className="absolute w-62.5 h-fit bg-white border border-zinc-100 rounded-xl px-3 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing flex flex-col justify-between overflow-hidden"
                 >
                   {isTop && (
                     <>
@@ -114,7 +114,7 @@ export function StackedCards({
                     </>
                   )}
 
-                  <div className="relative w-full h-[220px] rounded-md overflow-hidden shrink-0 mb-4">
+                  <div className="relative w-full h-55 rounded-md overflow-hidden shrink-0 mb-4">
                     <img src={card.image} alt={card.title} width={248} height={220} className="w-full h-full object-cover select-none pointer-events-none" loading="eager" />
                     <div className="absolute top-3 right-3 bg-zinc-950/70 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">{card.category}</div>
                   </div>
@@ -146,7 +146,7 @@ export function StackedCards({
 
           <button
             type="button" onClick={() => handleSwipe("right")} aria-label="Explore destination"
-            className="flex size-11 items-center justify-center rounded-full bg-zinc-950 text-white shadow-md transition-scale duration-200 hover:scale-110 hover:bg-zinc-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer"
+            className="flex size-11 items-center justify-center rounded-full bg-zinc-950 text-white active:text-rose-500 shadow-md transition-scale duration-200 hover:scale-110 hover:bg-zinc-800 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 cursor-pointer"
           >
             <Heart size={20} fill="currentColor" strokeWidth={0} aria-hidden="true" />
           </button>

@@ -168,6 +168,11 @@ const LazySlideDrawer = dynamic(
   { ssr: false }
 );
 
+const LazyLiquidDistortionImage = dynamic(
+  () => import("@/registry/components/liquid-distortion-image"),
+  { ssr: false }
+);
+
 function SlideDrawerDemo() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -232,7 +237,7 @@ export function RegistryComponentRenderer({
           <LazyAsciiReveal
             src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=764"
             alt="Ascii Portrait"
-            className="h-[275px] w-[220px] rounded-lg shadow-2xl"
+            className="h-69 w-55 rounded-lg shadow-2xl"
             columns={35}
             aspectWidth={4}
             aspectHeight={5}
@@ -269,8 +274,20 @@ export function RegistryComponentRenderer({
       return <LazyDropdownMenu />;
     case "sphere-gallery":
       return (
-        <div className="grid min-h-[480px] w-full rounded-2xl bg-zinc-950 place-items-center px-2 py-8 sm:min-h-[560px]">
+        <div className="grid min-h-120 w-full rounded-2xl bg-zinc-950 place-items-center px-2 py-8 sm:min-h-140">
           <LazySphereGallery size={520} />
+        </div>
+      );
+    case "liquid-distortion-image":
+      return (
+        <div className="flex items-center justify-center p-4">
+          <LazyLiquidDistortionImage
+            alt="Minimal liquid distortion hover demonstration"
+            className="w-full max-w-md aspect-4/5 shadow-2xl"
+            radius={0.28}
+            intensity={0.08}
+            speed={1.2}
+          />
         </div>
       );
     default:

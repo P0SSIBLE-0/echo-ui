@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion, type HTMLMotionProps } from "motion/react";
+import { Sparkles } from "lucide-react";
 
 // --- Web Audio API Synth click sound (Self-contained, no external audio files required) ---
 let audioCtx: AudioContext | null = null;
@@ -38,31 +39,32 @@ const playClick = (isRelease = false) => {
 
 export interface ClickyButtonProps extends HTMLMotionProps<"button"> {
   children?: React.ReactNode;
-  led?: boolean | "blinking";
+  icon?: React.ReactNode;
+  rounded?: "xs" | "sm" | "md" | "lg" | "xl" | "full";
   soundEnabled?: boolean;
 }
 
-// --- Reusable Component ---
 export function ClickyButton({
   children = "Click me",
-  led = true,
+  icon = <Sparkles className="size-3.5 text-white-400" />,
   soundEnabled = true,
+  rounded = "xl",
   className = "",
   ...props
 }: ClickyButtonProps) {
   const play = (isRelease: boolean) => soundEnabled && playClick(isRelease);
 
-  const ledClass = led === "blinking"
-    ? "bg-blue-500 shadow-[0_0_8px_#3b82f6] animate-pulse"
-    : led
-      ? "bg-blue-500 shadow-[0_0_8px_#3b82f6]"
-      : "bg-neutral-800 border border-neutral-700/50 shadow-none";
-
   return (
     <motion.button
       type="button"
-      onPointerDown={(e) => { play(false); props.onPointerDown?.(e); }}
-      onPointerUp={(e) => { play(true); props.onPointerUp?.(e); }}
+      onPointerDown={(e) => {
+        play(false);
+        props.onPointerDown?.(e);
+      }}
+      onPointerUp={(e) => {
+        play(true);
+        props.onPointerUp?.(e);
+      }}
       onKeyDown={(e) => {
         if (e.key === " " || e.key === "Enter") play(false);
         props.onKeyDown?.(e);
@@ -71,27 +73,25 @@ export function ClickyButton({
         if (e.key === " " || e.key === "Enter") play(true);
         props.onKeyUp?.(e);
       }}
-      whileHover="hover"
-      whileTap="press"
-      className={`relative select-none cursor-pointer p-0 border-none bg-transparent outline-none ${className}`}
+      className={`relative inline-flex select-none cursor-pointer p-0 border-none bg-transparent outline-none group ${className}`}
       {...props}
     >
-      {/* 3D Depth Base */}
-      <div className="absolute inset-x-0 top-0 bottom-[-2px] rounded-xl bg-slate-400 border-b-2 border-slate-600 shadow-sm" />
+      {/* 3D Depth Base Layer */}
+      <div className={`absolute inset-0 bg-zinc-900/70 border border-zinc-700/60 shadow-md rounded-${rounded}`} />
 
-      {/* Button Cap */}
+      {/* Button Front Cap */}
       <motion.div
-        variants={{ hover: { y: -8 }, press: { y: 0 } }}
-        initial={{ y: -6 }}
-        transition={{ type: "spring", stiffness: 390, damping: 25 }}
-        className="relative flex items-center justify-center gap-2.5 px-6 py-3.5 text-sm font-semibold rounded-xl border bg-linear-to-b from-white to-slate-200 text-slate-800 border-slate-100 shadow-[inset_0_1.5px_0_rgba(255,255,255,0.6)] hover:from-white hover:to-slate-100 hover:text-slate-900"
+        initial={{ y: -3 }}
+        whileHover={{ y: -4 }}
+        whileTap={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 500, damping: 25 }}
+        className={`relative flex items-center justify-center gap-2 text-sm font-semibold border border-zinc-800/90 bg-linear-to-b from-zinc-700 to-zinc-950 text-zinc-100 shadow-[inset_0_1px_3px_1px_rgba(255,255,255,0.15),0_1px_5px_rgba(0,0,0,0.4)] group-hover:border-zinc-700 transition-colors px-6 py-2.5 rounded-${rounded}`}
       >
-        {led !== false ? (
-          <span
-            aria-hidden
-            className={`h-2 w-2 rounded-full ${ledClass}`}
-          />
-        ) : null}
+        {icon && (
+          <span className="inline-flex items-center justify-center shrink-0">
+            {icon}
+          </span>
+        )}
         {children}
       </motion.div>
     </motion.button>

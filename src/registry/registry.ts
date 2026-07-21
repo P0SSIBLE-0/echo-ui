@@ -328,6 +328,18 @@ export const registryItems: RegistryItem[] = [
     date: formatDate(0),
     mediaPoster: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
   },
+  {
+    id: "liquid-distortion-image",
+    name: "Liquid Distortion Image",
+    title: "Liquid Distortion Image",
+    category: "Three Js",
+    sourceFile: "liquid-distortion-image.tsx",
+    files: componentFile("liquid-distortion-image.tsx"),
+    description: "A self-contained image component with WebGL liquid distortion and chromatic aberration shaders on hover.",
+    dependencies: ["three", "tailwindcss"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
+  },
 ];
 
 export const componentGroups: ComponentGroup[] = [
@@ -345,6 +357,7 @@ export const componentGroups: ComponentGroup[] = [
     items: [
       { label: "Physics Receipt", itemId: "physics-receipt" },
       { label: "Ascii Reveal", itemId: "ascii-reveal" },
+      { label: "Liquid Distortion Image", itemId: "liquid-distortion-image" },
     ],
   },
   {
