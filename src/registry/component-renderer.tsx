@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { motion, AnimatePresence } from "motion/react";
 import type { RegistryItem } from "@/registry/registry";
 
 // Lazy load every component — only the active one is downloaded and executed
@@ -173,6 +174,17 @@ const LazyLiquidDistortionImage = dynamic(
   { ssr: false }
 );
 
+const LazyShaderGradient = dynamic(
+  () => import("@/registry/components/shader-gradient"),
+  { ssr: false }
+);
+
+const LazyPaperBurn = dynamic(
+  () => import("@/registry/components/paper-burn"),
+  { ssr: false }
+);
+
+
 function SlideDrawerDemo() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -195,11 +207,51 @@ function SlideDrawerDemo() {
         </p>
         <button
           onClick={() => setIsOpen(false)}
-          className="px-4 py-1 text-sm my-4 font-semibold rounded hover:bg-gray-100 duration-150 bg-white text-black cursor-pointer">Close</button>
+          className="px-4 py-1 text-sm my-4 font-semibold rounded hover:bg-gray-100 duration-150 bg-white text-black cursor-pointer"
+        >
+          Close
+        </button>
       </LazySlideDrawer>
     </div>
   );
 }
+
+function PaperBurnDemo() {
+  const [key, setKey] = useState(0);
+  const [burned, setBurned] = useState(false);
+
+  return (
+    <div className="relative flex items-center justify-center w-full min-h-125 p-5">
+      <LazyPaperBurn
+        key={key}
+        onBurnComplete={() => setBurned(true)}
+      />
+
+      <AnimatePresence>
+        {burned && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <motion.button
+              key="reset-btn"
+              initial={{ opacity: 0, scale: 0.65, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.75, y: 12 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              type="button"
+              onClick={() => {
+                setBurned(false);
+                setKey((k) => k + 1);
+              }}
+              className="pointer-events-auto px-4 py-2 text-xs font-medium text-stone-200 bg-stone-900 hover:bg-stone-800 rounded-lg transition-colors cursor-pointer border border-stone-700/60 shadow-2xl z-20"
+            >
+              Reset / Create New Note
+            </motion.button>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 
 type RegistryComponentRendererProps = {
   itemId: RegistryItem["id"];
@@ -290,6 +342,11 @@ export function RegistryComponentRenderer({
           />
         </div>
       );
+    case "shader-gradient":
+      return <LazyShaderGradient />;
+    case "paper-burn":
+      return <PaperBurnDemo />;
+
     default:
       return null;
   }

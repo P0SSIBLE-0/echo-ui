@@ -53,6 +53,30 @@ function componentFile(sourceFile: string): RegistryFile[] {
 
 export const registryItems: RegistryItem[] = [
   {
+    id: "paper-burn",
+    name: "Paper Burn",
+    title: "Paper Burn Delete",
+    category: "Button",
+    sourceFile: "paper-burn.tsx",
+    files: componentFile("paper-burn.tsx"),
+    description: "An interactive vintage parchment paper note component that photorealistically burns away with glowing fire edge, charred paper, ash, smoke, and embers when deleted.",
+    dependencies: ["lucide-react", "motion", "tailwindcss"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600",
+  },
+  {
+    id: "shader-gradient",
+    name: "Shader Gradient",
+    title: "Shader Gradient Background",
+    category: "Three Js",
+    sourceFile: "shader-gradient.tsx",
+    files: componentFile("shader-gradient.tsx"),
+    description: "A high-performance WebGL GLSL moving gradient background that organically distorts and swells with cursor movement.",
+    dependencies: ["three", "tailwindcss"],
+    date: formatDate(0),
+    mediaPoster: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=600",
+  },
+  {
     id: "sphere-gallery",
     name: "Sphere Gallery",
     title: "3D Sphere Gallery",
@@ -350,14 +374,16 @@ export const componentGroups: ComponentGroup[] = [
       { label: "Gooey Button", itemId: "gooey-button" },
       { label: "Hold to Delete", itemId: "hold-to-delete" },
       { label: "Magnetic Button", itemId: "magnetic-button" },
+      { label: "Paper Burn", itemId: "paper-burn" },
     ],
   },
   {
     name: "Three Js",
     items: [
+      { label: "Shader Gradient", itemId: "shader-gradient" },
+      { label: "Liquid Distortion Image", itemId: "liquid-distortion-image" },
       { label: "Physics Receipt", itemId: "physics-receipt" },
       { label: "Ascii Reveal", itemId: "ascii-reveal" },
-      { label: "Liquid Distortion Image", itemId: "liquid-distortion-image" },
     ],
   },
   {
